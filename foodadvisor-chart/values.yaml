@@ -9,7 +9,7 @@ backend:
   applicationName: foodadvisor-backend 
 
   image:
-    repository: zeneto1/food-advisor-api
+    repository: leonardojp1/foodadvisor-api
     pullPolicy: IfNotPresent
     tag: "latest"
 
@@ -65,7 +65,7 @@ frontend:
   applicationName: foodadvisor-frontend 
 
   image:
-    repository: zeneto1/food-advisor-client
+    repository: leonardojp1/foodadvisor-client
     pullPolicy: IfNotPresent
     tag: "latest"
 
