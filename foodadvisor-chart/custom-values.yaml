@@ -1,0 +1,12 @@
+backend:
+  extraEnvs:
+    - name: DATABASE_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: db-secret
+          key: db-user
+    - name: DATABASE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: db-secret
+          key: db-pass

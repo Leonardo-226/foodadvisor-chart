@@ -1,0 +1,5 @@
+backend:
+  secretName: db-secret
+  dbName: strapi
+  dbUser: strapi
+  dbPass: strapi

@@ -1,0 +1,137 @@
+replicaCount: 1
+serviceAccount:
+  create: true  # Defina como true para criar uma ServiceAccount
+  name: ""      # Deixe vazio para usar o nome padrão
+# Backend configuration
+
+backend:
+  replicaCount: 1
+  applicationName: foodadvisor-backend 
+
+  image:
+    repository: zeneto1/food-advisor-api
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+  serviceAccount:
+    create: false
+    automount: true
+    annotations: {}
+    name: "frontend"
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+
+  service:
+    type: ClusterIP
+    port: 1337
+    targetPort: 1337
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: {}
+    hosts:
+      - host: foodadvisor.backend
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: foodadvisor-backend
+                port:
+                  number: 1337    
+  extraEnvs:
+    - name: DATABASE_CLIENT
+      value: postgres
+    - name: DATABASE_HOST
+      value: postgres-service
+    - name: DATABASE_PORT
+      value: 5432
+    - name: DATABASE_NAME
+      secretName: db-secret
+      secretKey: db-name
+    - name: DATABASE_USERNAME
+      secretName: db-secret
+      secretKey: db-user
+    - name: DATABASE_PASSWORD
+      secretName: db-secret
+      secretKey: db-pass
+ 
+frontend:
+  replicaCount: 1
+  applicationName: foodadvisor-frontend 
+
+  image:
+    repository: zeneto1/food-advisor-client
+    pullPolicy: IfNotPresent
+    tag: "latest"
+
+  serviceAccount:
+    create: false
+    automount: true
+    annotations: {}
+    name: "frontend"
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: {}
+    hosts:
+      - host: foodadvisor.client
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: foodadvisor-frontend
+                port:
+                  number: 3000
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+  
+
+
+# postgresql:
+#   image:
+#     tag: "16.0.0" # Use uma versão compatível com o banco já inicializado
+#   auth:
+#     username: foodadvisor
+#     password: secretpassword
+#     database: foodadvisor_db
+#     enablePostgresUser: true  # Se quiser habilitar o usuário 'postgres'
+#   primary:
+#     persistence:
+#       enabled: true
+#       size: 8Gi
+# postgresql:
+#   image: "postgres:15"
+#   database: "foodadvisor"
+#   username: "foodadvisor_user"
+#   password: "foodadvisor_pass"
+#   servicePort: 5432
+#   fullnameOverride: postgres-service
+
+# # postgresql:
+# #   name: postgres-service
+# #   service:
+# #     name: postgres-service # Define o nome do serviço do PostgreSQL
+
+postgresql:
+  image:
+    tag: "16.0.0" # Use uma versão compatível com o banco já inicializado
+  fullnameOverride: postgres-service
+  auth:
+    enablePostgresUser: true
+    postgresPassword: rootpost
+    username: strapi
+    password: strapi
+    database: strapi
